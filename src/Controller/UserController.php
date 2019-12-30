@@ -56,11 +56,23 @@ class UserController extends AbstractController
             throw new BadRequestHttpException("User must be defined");
         }
 
+        $this->parseRequiredArguments($body,array('mail','password'));
+
 
         try {
             $user = new User($body);
 
             $em = $this->getDoctrine()->getManager();
+
+            /** @var User $existing */
+            $existing = $em->getRepository(User::class)->findOneBy(array(
+                'mail' => $user->getMail()
+            ));
+
+            if($existing instanceof User) {
+                throw new BadRequestHttpException("Un utilisateur existe déjà avec cette adresse e-mail");
+            }
+
 
             $password = $encoder->encodePassword($user,$user->getPassword());
 
@@ -121,5 +133,21 @@ class UserController extends AbstractController
 
     }
 
+    /**
+     * @param array $args
+     * @param array $required
+     * @return bool
+     */
+    protected function parseRequiredArguments($args = array(),$required = array()) : bool
+    {
+        foreach ($required as $req) {
+            if(!isset($args[$req]) || empty($args[$req])) {
+                throw new BadRequestHttpException(sprintf("Required attribute '%s' is missing",$req));
+
+            }
+        }
+
+        return  true;
+    }
 
 }
