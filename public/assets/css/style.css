@@ -1,0 +1,133 @@
+.mg-top-100 {
+    margin-top: 100px;
+}
+
+.user {
+    background: #fff;
+    box-shadow: 0 0 20px 3px rgba(0,0,0,0.5);
+    margin-bottom: 30px;
+}
+
+.alert-like {
+    background: #0aab0a;
+}
+.alert-add-to-favorite, .alert-remove-from-favorite {
+    background: #fec007;
+}
+
+.alert-unlike,.alert-limit_exceeded {
+    background: red;
+}
+
+.alert-superlike {
+    background: #0d29ff;
+}
+
+.my-alert {
+    display: none;
+    z-index: 999;
+    position: fixed;
+    bottom: 15px;
+    right: 15px;
+    padding: 15px 25px;
+    color: #fff;
+    font-weight: bold;
+}
+
+.user h3 {
+    margin-top: 10px;
+}
+
+.user-content {
+    padding: 0 15px;
+}
+
+.jumbotron {
+    position: relative;
+}
+
+.top-right {
+    position: relative;
+    top: 10px;
+    right: 10px;
+    float: right;
+    margin-top: -30px;
+    margin-right: 10px;
+}
+
+@media(max-width: 768px) {
+    .top-right {
+        float: none;
+        width: 100%;
+        margin-top: 10px;
+        margin-right: 0;
+        margin-left: 0;
+        top: 0;
+        right: 0;
+    }
+}
+
+.btn-group {
+    display: block;
+    width: 100%;
+    text-align: center;
+}
+
+.btn-group .btn {
+    width: 33.333%;
+    margin: 0;
+    border-radius: 0;
+    float: left;
+}
+
+.user-content p {
+    margin-bottom: 0;
+}
+
+.user-content .bio-label {
+    margin-top: 15px;
+    display: block;
+}
+
+.user-content p span {
+    color: #868686;
+}
+
+.user-content .bio {
+    color: #868686;
+    margin-bottom: 20px;
+}
+
+.mg-top-20 {
+    margin-top: 20px;
+}
+.mg-top-50 {
+    margin-top: 50px;
+}
+
+.owl-nav {
+    position: absolute;
+    top: 50%;
+    left: 5px;
+    right: 5px;
+}
+
+.owl-nav button{
+    font-size: 60px !important;
+    color: #565656;
+}
+
+.owl-nav .owl-next {
+    position: absolute;
+    right: 0;
+}
+
+.favorite {
+    position: absolute;
+    z-index: 999;
+    top: 5px;
+    right: 20px;
+    font-size: 30px;
+    cursor: pointer;
+    color: #fec007;
+}

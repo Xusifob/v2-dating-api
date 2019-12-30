@@ -1,0 +1,288 @@
+<?php
+
+
+namespace App\Entity;
+
+use Symfony\Component\Security\Core\User\UserInterface;
+use Doctrine\ORM\Mapping as ORM;
+
+
+/**
+ * @ORM\Table(name="users")
+ * @ORM\Entity
+ */
+class User extends Entity implements UserInterface, \JsonSerializable
+{
+    /**
+     * @ORM\Id()
+     * @ORM\GeneratedValue(strategy="UUID")
+     * @ORM\Column(type="guid")
+     */
+    protected $id;
+
+    /**
+     * @ORM\Column(type="string", length=25, unique=true)
+     */
+    protected $mail;
+
+
+    /**
+     * @ORM\Column(type="string", length=500)
+     */
+    protected $password;
+
+    /**
+     * @var array
+     *
+     * @ORM\Column(type="array")
+     */
+    protected $settings = array();
+
+    /**
+     *
+     * Phone Number
+     *
+     * @ORM\Column(type="string", length=20,nullable=true)
+     */
+    protected $phone;
+
+
+    /**
+     * @var string
+     * @ORM\Column(type="string", length=256,nullable=true)
+     */
+    protected $photo;
+
+    /**
+     * @var string
+     * @ORM\Column(type="string", length=64,nullable=true)
+     */
+    protected $fullName;
+
+    /**
+     * @ORM\Column(type="string", length=128,nullable=true)
+     */
+    protected $tinder_refresh_token;
+
+    /**
+     * @ORM\Column(type="string",length=128, nullable=true)
+     */
+    protected $tinder_token;
+
+    /**
+     * @ORM\Column(type="string", length=128,nullable=true)
+     */
+    protected $bumble_refresh_token;
+
+    /**
+     * @ORM\Column(type="string", length=128,nullable=true)
+     */
+    protected $tiilt_refresh_token;
+
+
+
+    public function getSalt()
+    {
+        return null;
+    }
+
+    public function getPassword()
+    {
+        return $this->password;
+    }
+
+    public function setPassword($password)
+    {
+        $this->password = $password;
+    }
+
+    public function getRoles()
+    {
+        return array('ROLE_USER');
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+
+    /**
+     * @return mixed
+     */
+    public function getMail() : string
+    {
+        return $this->mail;
+    }
+
+    /**
+     * @param mixed $mail
+     */
+    public function setMail($mail): void
+    {
+        $this->mail = $mail;
+    }
+
+    public function getUsername()
+    {
+        return $this->mail;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPhone()
+    {
+        return $this->phone;
+    }
+
+    /**
+     * @param mixed $phone
+     */
+    public function setPhone($phone): void
+    {
+        $this->phone = $phone;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTinderRefreshToken()
+    {
+        return $this->tinder_refresh_token;
+    }
+
+    /**
+     * @param mixed $tinder_refresh_token
+     */
+    public function setTinderRefreshToken($tinder_refresh_token): void
+    {
+        $this->tinder_refresh_token = $tinder_refresh_token;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBumbleRefreshToken()
+    {
+        return $this->bumble_refresh_token;
+    }
+
+    /**
+     * @param mixed $bumble_refresh_token
+     */
+    public function setBumbleRefreshToken($bumble_refresh_token): void
+    {
+        $this->bumble_refresh_token = $bumble_refresh_token;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTinderToken()
+    {
+        return $this->tinder_token;
+    }
+
+    /**
+     * @param mixed $tinder_token
+     */
+    public function setTinderToken($tinder_token): void
+    {
+        $this->tinder_token = $tinder_token;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTiiltRefreshToken()
+    {
+        return $this->tiilt_refresh_token;
+    }
+
+    /**
+     * @param mixed $tiilt_refresh_token
+     */
+    public function setTiiltRefreshToken($tiilt_refresh_token): void
+    {
+        $this->tiilt_refresh_token = $tiilt_refresh_token;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSettings(): ?array
+    {
+        return $this->settings ? $this->settings : array();
+    }
+
+    /**
+     * @param array $settings
+     */
+    public function setSettings(?array $settings): void
+    {
+        if(is_array($settings)) {
+            $this->settings = $settings;
+        }
+    }
+
+    /**
+     * @return string
+     */
+    public function getPhoto(): ?string
+    {
+        return $this->photo;
+    }
+
+    /**
+     * @param string $photo
+     */
+    public function setPhoto(?string $photo): void
+    {
+        $this->photo = $photo;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFullName(): ?string
+    {
+        return $this->fullName;
+    }
+
+    /**
+     * @param string $fullName
+     */
+    public function setFullName(?string $fullName): void
+    {
+        $this->fullName = $fullName;
+    }
+
+
+
+
+
+    public function eraseCredentials()
+    {
+    }
+
+
+    /**
+     * @return array|mixed
+     */
+    public function jsonSerialize()
+    {
+        return array(
+            'id' => $this->getId(),
+            'mail' => $this->getMail(),
+            'phone' => $this->getPhone(),
+            'settings' => $this->getSettings(),
+            'photo' => $this->getPhoto(),
+            'fullName' => $this->getFullName(),
+        );
+    }
+
+}

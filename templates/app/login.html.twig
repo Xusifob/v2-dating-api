@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+Login - {{ parent() }}
+{% endblock %}
+
+{% block body %}
+    <div class="container mg-top-100">
+        <div class="row">
+            <div class="col-12 offset-0 offset-md-3 col-md-6">
+                <form method="POST" action="login/sms" class="jumbotron">
+                    <h4 class="text-center">Connectez-vous à votre compte Tinder</h4>
+                    <p class="text-center">Entrez votre numéro de téléphone pour vous connecter à votre compte</p>
+                    <div class="form-group">
+                        <label for="tel">Numéro de téléphone (avec identifiant de pays)</label>
+                        <input type="tel" placeholder="+33659559669" name="tel" id="tel" class="form-control">
+                    </div>
+                    <input type="submit" class="btn btn-primary btn-lg">
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
