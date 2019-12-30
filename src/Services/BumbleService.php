@@ -291,6 +291,7 @@ class BumbleService extends APIService
     public function isConfigured(): bool
     {
 
+        return false;
         return $this->user->getBumbleRefreshToken() !== null;
 
     }

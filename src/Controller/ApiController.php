@@ -539,18 +539,18 @@ class ApiController extends AbstractController
 
 
         // Delete the favorite on superlike
-        /** @var Profile $profile *
+        /** @var Profile $profile */
         $profile = $em->getRepository(Profile::class)
-        ->findOneBy(array(
-        'owner' => $this->getUser(),
-        'app' => $profile->getApp(),
-        'appId' => $profile->getAppId(),
-        ));
+            ->findOneBy(array(
+                'owner' => $this->getUser(),
+                'app' => $profile->getApp(),
+                'appId' => $profile->getAppId(),
+            ));
 
         if($profile) {
-        $em->remove($profile);
-        $em->flush();
-        } */
+            $em->remove($profile);
+            $em->flush();
+        }
 
         return new JsonResponse($data);
     }
