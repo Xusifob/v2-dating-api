@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Table(name="users")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  */
 class User extends Entity implements UserInterface, \JsonSerializable
 {
@@ -78,6 +78,11 @@ class User extends Entity implements UserInterface, \JsonSerializable
      * @ORM\Column(type="string", length=128,nullable=true)
      */
     protected $tiilt_refresh_token;
+
+    /**
+     * @ORM\Column(type="datetime",nullable=true)
+     */
+    protected $next_super_like;
 
 
 
@@ -259,6 +264,22 @@ class User extends Entity implements UserInterface, \JsonSerializable
     public function setFullName(?string $fullName): void
     {
         $this->fullName = $fullName;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getNextSuperLike()
+    {
+        return $this->next_super_like;
+    }
+
+    /**
+     * @param mixed $next_super_like
+     */
+    public function setNextSuperLike($next_super_like): void
+    {
+        $this->next_super_like = $next_super_like;
     }
 
 

@@ -580,12 +580,14 @@ class ApiController extends AbstractController
                 'title' => ucfirst(BumbleService::APP),
                 'img' => $request->getSchemeAndHttpHost() . '/assets/images/bumble_logo.png',
                 'isConfigured' => $this->getService(BumbleService::APP)->isConfigured()
-            ),array(
+            ),
+            /*
+            array(
                 'app' => TiiltService::APP,
                 'title' => ucfirst(TiiltService::APP),
                 'img' => $request->getSchemeAndHttpHost() . '/assets/images/tiilt_logo.jpg',
                 'isConfigured' => $this->getService(TiiltService::APP)->isConfigured()
-            )
+            ) */
         );
 
 

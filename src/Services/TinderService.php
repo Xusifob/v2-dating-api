@@ -181,7 +181,7 @@ class TinderService extends APIService
      *
      * @throws \Exception
      */
-    public function superLike(Profile $profile) : Match
+    public function superLike(Profile $profile,$silent = false) : Match
     {
 
         $result = $this->post('/like/' . $profile->getAppId(). '/super?locale=fr',array('s_number' => $profile->getAttribute('s_number')));
@@ -193,7 +193,7 @@ class TinderService extends APIService
         $match->setMatched(isset($result['match']) ? $result['match'] : false);
 
 
-        if(isset($result['limit_exceeded']) && true === $result['limit_exceeded']) {
+        if(isset($result['limit_exceeded']) && true === $result['limit_exceeded'] && !$silent) {
             throw new BadRequestHttpException("Vous n'avez plus de superlike disponible");
         }
 
