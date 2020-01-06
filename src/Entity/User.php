@@ -72,17 +72,27 @@ class User extends Entity implements UserInterface, \JsonSerializable
     /**
      * @ORM\Column(type="string", length=128,nullable=true)
      */
-    protected $bumble_refresh_token;
-
-    /**
-     * @ORM\Column(type="string", length=128,nullable=true)
-     */
     protected $tiilt_refresh_token;
 
     /**
      * @ORM\Column(type="datetime",nullable=true)
      */
     protected $next_super_like;
+
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=64,nullable=true)
+     */
+    protected $bumble_user_id;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=64,nullable=true)
+     */
+    protected $badoo_user_id;
 
 
 
@@ -168,21 +178,6 @@ class User extends Entity implements UserInterface, \JsonSerializable
         $this->tinder_refresh_token = $tinder_refresh_token;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getBumbleRefreshToken()
-    {
-        return $this->bumble_refresh_token;
-    }
-
-    /**
-     * @param mixed $bumble_refresh_token
-     */
-    public function setBumbleRefreshToken($bumble_refresh_token): void
-    {
-        $this->bumble_refresh_token = $bumble_refresh_token;
-    }
 
     /**
      * @return mixed
@@ -281,6 +276,39 @@ class User extends Entity implements UserInterface, \JsonSerializable
     {
         $this->next_super_like = $next_super_like;
     }
+
+    /**
+     * @return string
+     */
+    public function getBumbleUserId(): ?string
+    {
+        return $this->bumble_user_id;
+    }
+
+    /**
+     * @param string $bumble_user_id
+     */
+    public function setBumbleUserId(?string $bumble_user_id): void
+    {
+        $this->bumble_user_id = $bumble_user_id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBadooUserId(): ?string
+    {
+        return $this->badoo_user_id;
+    }
+
+    /**
+     * @param string $badoo_user_id
+     */
+    public function setBadooUserId(?string $badoo_user_id): void
+    {
+        $this->badoo_user_id = $badoo_user_id;
+    }
+
 
 
 

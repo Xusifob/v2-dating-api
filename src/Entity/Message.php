@@ -60,7 +60,7 @@ class Message extends Entity implements \JsonSerializable
      */
     public function getContent()
     {
-        return $this->content;
+        return trim($this->content);
     }
 
     /**
@@ -90,7 +90,7 @@ class Message extends Entity implements \JsonSerializable
     /**
      * @return mixed
      */
-    public function getSentDate() : \DateTime
+    public function getSentDate() : ?\DateTime
     {
         return $this->sentDate;
     }
@@ -138,8 +138,8 @@ class Message extends Entity implements \JsonSerializable
         return array(
             'appId' => $this->getAppId(),
             'content' => $this->getContent(),
-            'profile' => $this->getProfile()->toArray('small'),
-            'sentDate' => $this->getSentDate()->format(\DateTime::ISO8601),
+            'profile' => $this->getProfile() ? $this->getProfile()->toArray('small') : array(),
+            'sentDate' => $this->getSentDate() ? $this->getSentDate()->format(\DateTime::ISO8601) : null,
             'app' => $this->getApp(),
         );
     }

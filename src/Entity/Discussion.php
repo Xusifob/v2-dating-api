@@ -146,7 +146,7 @@ class Discussion extends Entity implements \JsonSerializable
         return array(
             'appId' => $this->getAppId(),
             'profile' => $this->getProfile(),
-            'createdDate' => $this->getCreatedDate()->format(\DateTime::ISO8601),
+            'createdDate' => $this->getCreatedDate() ? $this->getCreatedDate()->format(\DateTime::ISO8601) : null,
             'messages' => $this->getMessages(),
             'app' => $this->getApp(),
         );

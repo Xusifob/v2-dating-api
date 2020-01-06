@@ -13,10 +13,13 @@ use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Symfony\Component\Finder\Exception\AccessDeniedException;
+use Symfony\Component\HttpClient\Exception\ServerException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Symfony\Component\Security\Core\Security;
 
 class TinderService extends APIService
@@ -113,10 +116,10 @@ class TinderService extends APIService
             }
 
             if(isset($match['user']['schools'][0]['name'])) {
-                $profile->setSchool($match['user']['schools'][0]['name']);
+                $profile->addProfileField("School",$match['user']['schools'][0]['name']);
             }
             if(isset($match['user']['jobs'][0]['title']['name'])) {
-                $profile->setJobTitle($match['user']['jobs'][0]['title']['name']);
+                $profile->addProfileField("Job",$match['user']['jobs'][0]['title']['name']);
             }
 
 
@@ -416,6 +419,7 @@ class TinderService extends APIService
      */
     public function getDiscussion(string $discussion_id ) : array
     {
+
         $data = $this->get('matches/'. $discussion_id .'/messages?count=30&locale=fr');
 
         $messages = array();
@@ -471,19 +475,6 @@ class TinderService extends APIService
     }
 
 
-    /**
-     * @return Profile
-     */
-    public function getProfile() : Profile
-    {
-        $u = new Profile();
-        $u->setFullName($this->user->getFullName());
-        $u->addPicture($this->user->getPhoto());
-
-        return $u;
-    }
-
-
 
     public function fetchProfileInfos() : User
     {
@@ -499,6 +490,27 @@ class TinderService extends APIService
         return $this->user;
 
     }
+
+
+    /**
+     * @param $lat
+     * @param $lng
+     * @return mixed
+     */
+    public function updateLocation($lat,$lng) : bool
+    {
+        try {
+            $this->post('/user/ping', array(
+                'lat' => $lat,
+                'lon' => $lng
+            ));
+        }catch (\Exception $exception) {
+            throw new HttpException(Response::HTTP_INTERNAL_SERVER_ERROR,"Une erreur s'est produite lors de la mise à jour de la localisation");
+        }
+
+        return true;
+    }
+
 
     /**
      * @return bool

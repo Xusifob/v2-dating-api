@@ -136,14 +136,34 @@ abstract class APIService
     protected function rawPost($url,$json = array(),$form_params = array())
     {
 
-        return ($this->client->post($url,array(
+        return ($this->rawPostFull($url,$json,$form_params)->getBody()->getContents());
+
+    }
+
+
+
+    /**
+     * @param $url
+     * @param array $json
+     * @param array $form_params
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function rawPostFull($url,$json = array(),$form_params = array())
+    {
+
+        if(is_string($json)) {
+            $json = json_decode($json, true);
+        }
+
+
+        return $this->client->post($url,array(
             'json' => $json,
             'form_params' => $form_params,
             'headers' => $this->headers,
             'cookies' => $this->cookieJar,
-        ))->getBody()->getContents());
-
+        ));
     }
+
 
     /**
      * @param $url
@@ -227,6 +247,18 @@ abstract class APIService
 
 
     /**
+     * @param $lat
+     * @param $long
+     * @return bool
+     */
+    public function updateLocation($lat,$long) : bool
+    {
+        throw new BadRequestHttpException("Update Location is not enabled in the app " .$this::APP);
+
+    }
+
+
+    /**
      * @param User $user
      * @return bool
      */
@@ -262,6 +294,7 @@ abstract class APIService
     public function setCookieJar(array $array = array()): void
     {
 
+
         if(!$array) {
             return;
         }
@@ -275,6 +308,21 @@ abstract class APIService
 
     }
 
+
+    /**
+     * @return Profile
+     */
+    public function getProfile() : Profile
+    {
+        $u = new Profile();
+        $u->setFullName($this->user->getFullName());
+        $u->addPicture($this->user->getPhoto());
+
+        return $u;
+    }
+
+
+
     /**
      * @return User
      */
@@ -282,6 +330,5 @@ abstract class APIService
     {
         return $this->user;
     }
-
 
 }

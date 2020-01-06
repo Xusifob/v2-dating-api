@@ -41,11 +41,6 @@ class Profile extends Entity implements \JsonSerializable
      */
     protected $bio;
 
-    /**
-     * @var string
-     * @ORM\Column(type="string", length=64,nullable=true)
-     */
-    protected $jobTitle;
 
     /**
      * @var int
@@ -61,11 +56,6 @@ class Profile extends Entity implements \JsonSerializable
     protected $distance;
 
 
-    /**
-     * @var string
-     * @ORM\Column(type="string", length=64,nullable=true)
-     */
-    protected $school;
 
 
     /**
@@ -93,6 +83,12 @@ class Profile extends Entity implements \JsonSerializable
      * @ORM\Column(type="string", length=64)
      */
     protected $appId;
+
+    /**
+     * @var array
+     * @ORM\Column(type="array")
+     */
+    protected $profileFields = array();
 
 
     /**
@@ -178,23 +174,7 @@ class Profile extends Entity implements \JsonSerializable
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getJobTitle(): ?string
-    {
-        return $this->jobTitle;
-    }
 
-    /**
-     * @param string $jobTitle
-     */
-    public function setJobTitle(?string $jobTitle)
-    {
-        $this->jobTitle = $jobTitle;
-
-        return $this;
-    }
 
     /**
      * @return int
@@ -301,25 +281,6 @@ class Profile extends Entity implements \JsonSerializable
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getSchool(): ?string
-    {
-        return $this->school;
-    }
-
-    /**
-     * @param string $school
-     *
-     * @return  $this
-     */
-    public function setSchool(?string $school)
-    {
-        $this->school = $school;
-
-        return $this;
-    }
 
     /**
      * @return array
@@ -377,6 +338,32 @@ class Profile extends Entity implements \JsonSerializable
         $this->owner = $owner;
     }
 
+    /**
+     * @return array
+     */
+    public function getProfileFields(): array
+    {
+        return is_array($this->profileFields) ? $this->profileFields : array();
+    }
+
+    /**
+     * @param array $profileFields
+     */
+    public function setProfileFields(array $profileFields): void
+    {
+        $this->profileFields = $profileFields;
+    }
+
+
+    /**
+     * @param string $key
+     * @param string $value
+     */
+    public function addProfileField(string $key, string $value) : void
+    {
+        $this->profileFields[$key] = $value;
+    }
+
 
     /**
      * @param string $group
@@ -407,9 +394,8 @@ class Profile extends Entity implements \JsonSerializable
             'isFavorite' => $this->isFavorite(),
             'pictures' => $this->getPictures(),
             'distance' => $this->getDistance(),
-            'jobTitle' => $this->getJobTitle(),
-            'school' => $this->getSchool(),
             'attributes' => $this->getAttributes(),
+            'profileFields' => $this->getProfileFields(),
         );
     }
 }
