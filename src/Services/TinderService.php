@@ -179,6 +179,7 @@ class TinderService extends APIService
 
     /**
      * @param Profile $profile
+     * @param bool    $silent
      *
      * @return Match
      *
@@ -192,7 +193,7 @@ class TinderService extends APIService
         $match = new Match();
 
         $match->setProfile($profile);
-        $match->setAction('like');
+        $match->setAction('superlike');
         $match->setMatched(isset($result['match']) ? $result['match'] : false);
 
 
@@ -202,7 +203,10 @@ class TinderService extends APIService
 
         if(isset($result['super_likes']['resets_at']) && $result['super_likes']['resets_at']) {
 
-            $nextAction = new \DateTime($result['super_likes']['resets_at']);
+            $timezone = new \DateTimeZone('Europe/Paris');
+
+            $nextAction = new \DateTime($result['super_likes']['resets_at'],$timezone);
+            $nextAction->setTimezone(new \DateTimeZone('Europe/Paris'));
             $match->setNextAction($nextAction);
         }
 
