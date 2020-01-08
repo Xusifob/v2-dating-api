@@ -198,16 +198,18 @@ class TinderService extends APIService
 
 
         if(isset($result['limit_exceeded']) && true === $result['limit_exceeded'] && !$silent) {
-            throw new BadRequestHttpException("Vous n'avez plus de superlike disponible");
-        }
+            if($silent) {
+                if(isset($result['super_likes']['resets_at']) && $result['super_likes']['resets_at']) {
 
-        if(isset($result['super_likes']['resets_at']) && $result['super_likes']['resets_at']) {
+                    $timezone = new \DateTimeZone('Europe/Paris');
 
-            $timezone = new \DateTimeZone('Europe/Paris');
-
-            $nextAction = new \DateTime($result['super_likes']['resets_at'],$timezone);
-            $nextAction->setTimezone(new \DateTimeZone('Europe/Paris'));
-            $match->setNextAction($nextAction);
+                    $nextAction = new \DateTime($result['super_likes']['resets_at'],$timezone);
+                    $nextAction->setTimezone(new \DateTimeZone('Europe/Paris'));
+                    $match->setNextAction($nextAction);
+                }
+            }else {
+                throw new BadRequestHttpException("Vous n'avez plus de superlike disponible");
+            }
         }
 
         return $match;
