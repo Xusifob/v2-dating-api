@@ -197,7 +197,11 @@ class TinderService extends APIService
 
         $match->setProfile($profile);
         $match->setAction('like');
-        $match->setMatched($result['match']);
+        if(!is_bool($result['match'])) {
+            $match->setMatched(true);
+        } else {
+            $match->setMatched($result['match']);
+        }
 
         return $match;
 
@@ -400,10 +404,30 @@ class TinderService extends APIService
     public function getMessageList()
     {
 
-        $result =  $this->get('matches?count=30&is_tinder_u=false&locale=fr&message=1');
-
         $discussions = array();
 
+        $result =  $this->get('matches?count=30&is_tinder_u=false&locale=fr&message=1');
+        $discussions = array_merge($discussions,$this->parseMessageList($result));
+        $result =  $this->get('matches?count=30&is_tinder_u=false&locale=fr&message=0');
+        $discussions = array_merge($discussions,$this->parseMessageList($result));
+
+        /** @var  $discussions */
+        usort($discussions,function (Discussion $a,Discussion $b) {
+            return $a->getCreatedDate() > $b->getCreatedDate() ? -1 : 1;
+        });
+
+        return $discussions;
+    }
+
+
+    /**
+     * @param $result
+     * @return array
+     * @throws \Exception
+     */
+    protected function parseMessageList($result)
+    {
+        $discussions = array();
         foreach ($result['data']['matches'] as $match) {
 
 
@@ -436,22 +460,24 @@ class TinderService extends APIService
 
             $u = $this->getProfile();
 
-            foreach ($match['messages'] as $m) {
+            if(isset($match['messages'])) {
+                foreach ($match['messages'] as $m) {
 
-                $message = new Message();
-                $message->setAppId($m['_id']);
-                $message->setContent($m['message']);
-                $message->setSentDate($m['sent_date']);
-                $message->setApp(self::APP);
+                    $message = new Message();
+                    $message->setAppId($m['_id']);
+                    $message->setContent($m['message']);
+                    $message->setSentDate($m['sent_date']);
+                    $message->setApp(self::APP);
 
-                if ($profile->getAppId() == $m['from']) {
-                    $message->setProfile($profile);
-                } else {
-                    $message->setProfile($u);
+                    if ($profile->getAppId() == $m['from']) {
+                        $message->setProfile($profile);
+                    } else {
+                        $message->setProfile($u);
+                    }
+
+                    $discussion->addMessage($message);
+
                 }
-
-                $discussion->addMessage($message);
-
             }
 
             $discussions[] = $discussion;
@@ -459,6 +485,8 @@ class TinderService extends APIService
         }
 
         return $discussions;
+
+
     }
 
 

@@ -78,20 +78,17 @@ class ApiController extends AbstractController
     public function matchesAction(string $app)
     {
 
-        $notConfigured = 0;
 
         $matches = array();
         if($app === 'all') {
-            foreach ($this->services as $service) {
-                if($service->isConfigured()) {
-                    $matches = array_merge($matches,$service->getMatches());
-                } else {
-                    $notConfigured++;
-                }
-            }
+            $services = $this->getConfiguredServices('getMatches');
 
-            if(count($this->services) === $notConfigured) {
-                throw new NotAcceptableHttpException("You need to configure at least one service for current user");
+            foreach ($services as $service) {
+                try {
+                    $matches = array_merge($matches, $service->getMatches());
+                }catch (\Exception $exception) {
+                    //@Do something
+                }
             }
 
             shuffle($matches);
@@ -135,7 +132,11 @@ class ApiController extends AbstractController
             $services = $this->getConfiguredServices('getPendingMatches');
 
             foreach ($services as $service) {
-               $matches = array_merge($matches,$service->getPendingMatches());
+                try {
+                    $matches = array_merge($matches, $service->getPendingMatches());
+                }catch (\Exception $exception) {
+                    //@Do something
+                }
             }
 
             shuffle($matches);
