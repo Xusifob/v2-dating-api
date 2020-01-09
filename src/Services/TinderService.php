@@ -22,6 +22,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Symfony\Component\Security\Core\Security;
 
+
 class TinderService extends APIService
 {
 
@@ -122,6 +123,49 @@ class TinderService extends APIService
                 $profile->addProfileField("Job",$match['user']['jobs'][0]['title']['name']);
             }
 
+
+            $profiles[] = $profile;
+
+        }
+
+        return $profiles;
+
+    }
+
+
+    /**
+     * @return Profile[]
+     * @throws \Exception
+     */
+    public function getPendingMatches() : array
+    {
+
+        try {
+            $matches =  $this->get('fast-match/teasers?locale=fr');
+        }catch (RequestException $exception) {
+
+            if($exception->getResponse()->getStatusCode() === Response::HTTP_UNAUTHORIZED) {
+
+                $this->refreshToken();
+
+                $matches =  $this->get('fast-match/teasers?locale=fr');
+            }
+        }
+
+        $profiles = array();
+
+        foreach ($matches['data']['results'] as $match)
+        {
+            $profile = new Profile();
+            $profile
+                ->setApp(self::APP)
+                ->setAppId($match['user']['_id'])
+                ->setIsFavorite(false)
+            ;
+
+            foreach($match['user']['photos'] as $photo) {
+                $profile->addPicture($photo['processedFiles'][1]['url']);
+            }
 
             $profiles[] = $profile;
 
@@ -482,10 +526,17 @@ class TinderService extends APIService
 
 
 
+    public function getProfileInfos()
+    {
+        $data = $this->get('profile?include=user');
+
+        return $data;
+    }
+
     public function fetchProfileInfos() : User
     {
 
-        $data = $this->get('profile?include=user');
+        $data = $this->getProfileInfos();
 
         $this->user->setFullName($data['data']['user']['name']);
         $this->user->setPhoto($data['data']['user']['photos'][0]['processedFiles'][1]['url']);
@@ -498,24 +549,43 @@ class TinderService extends APIService
     }
 
 
+
     /**
-     * @param $lat
-     * @param $lng
-     * @return mixed
+     * @param array $location
+     * @return bool
      */
-    public function updateLocation($lat,$lng) : bool
+    public function updateLocation($location = array()) : bool
     {
+
+        $this->parseRequiredArguments($location,array('lat','lon'));
+
         try {
-            $this->post('/user/ping', array(
-                'lat' => $lat,
-                'lon' => $lng
+            $data = $this->post('/user/ping', array(
+                'lat' => $location['lat'],
+                'lon' => $location['lon']
             ));
+
         }catch (\Exception $exception) {
             throw new HttpException(Response::HTTP_INTERNAL_SERVER_ERROR,"Une erreur s'est produite lors de la mise à jour de la localisation");
         }
 
         return true;
     }
+
+
+    /**
+     * @return array
+     */
+    public function getCurrentLocation() : array
+    {
+        $data = $this->getProfileInfos();
+
+        return array(
+            'lat' => $data['data']['user']['pos']['lat'],
+            'lon' => $data['data']['user']['pos']['lon'],
+        );
+    }
+
 
 
     /**

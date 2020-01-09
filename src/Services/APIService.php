@@ -247,13 +247,21 @@ abstract class APIService
 
 
     /**
-     * @param $lat
-     * @param $long
+     * @param array $location
      * @return bool
      */
-    public function updateLocation($lat,$long) : bool
+    public function updateLocation($location = array()) : bool
     {
         throw new BadRequestHttpException("Update Location is not enabled in the app " .$this::APP);
+
+    }
+
+    /**
+     * @return array
+     */
+    public function getCurrentLocation() : array
+    {
+        throw new BadRequestHttpException("Get Location is not enabled in the app " .$this::APP);
 
     }
 

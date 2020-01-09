@@ -117,13 +117,181 @@ class ApiController extends AbstractController
     }
 
 
+   /**
+     *
+     * @Route("matches/pending", methods={"GET"})
+     *
+     * @param string $app
+     * @return JsonResponse
+     */
+    public function matchesPendingAction(string $app)
+    {
+
+        $notConfigured = 0;
+
+        $matches = array();
+        if($app === 'all') {
+
+            $services = $this->getConfiguredServices('getPendingMatches');
+
+            foreach ($services as $service) {
+               $matches = array_merge($matches,$service->getPendingMatches());
+            }
+
+            shuffle($matches);
+
+        } else {
+
+            $service = $this->getService($app);
+
+            if(!$service->isConfigured()) {
+                throw new NotAcceptableHttpException("Service is not configured for current user");
+            }
+
+            if(!method_exists($service,'getPendingMatches')) {
+                throw new BadRequestHttpException("Get pending matches doesn't work yet on app " . $service::APP);
+            }
+
+            $matches = $service->getPendingMatches();
+        }
+
+        if(!$matches) {
+            throw new NotFoundHttpException("Aucun profil trouvé");
+        }
+
+        return new JsonResponse($matches);
+
+    }
+
+
+
+    /**
+     *
+     * @Route("location", methods={"POST"})
+     *
+     * @param Request $request
+     * @param string $app
+     * @return JsonResponse
+     */
+    public function locationUpdateAction(Request $request,string $app)
+    {
+
+        $location = json_decode($request->getContent(),true);
+
+        if(!$location) {
+            throw new BadRequestHttpException("Location must be defined");
+        }
+
+        $notConfigured = 0;
+
+        $matches = array();
+        if($app === 'all') {
+
+            $services = $this->getConfiguredServices('updateLocation');
+
+            foreach ($services as $service) {
+                try {
+                    $service->updateLocation($location);
+                }catch (\Exception $exception) {
+                }
+            }
+
+        } else {
+
+            $service = $this->getService($app);
+
+            if(!$service->isConfigured()) {
+                throw new NotAcceptableHttpException("Service is not configured for current user");
+            }
+
+            $matches = $service->updateLocation($location);
+        }
+
+
+        return new JsonResponse(array("success" => "Votre localisation a bien été mise à jour"));
+
+    }
+
+
+    /**
+     * @param null $method
+     * @return APIService[]
+     */
+    protected function getConfiguredServices($method = null) : array
+    {
+        $services = array();
+        foreach ($this->services as $service) {
+            if(!$service->isConfigured()) {
+                continue;
+            }
+
+            if($method && !method_exists($service,$method)) {
+                continue;
+            }
+
+            $services[] = $service;
+
+        }
+
+        if(empty($services)) {
+            throw new NotAcceptableHttpException("You need to configure at least one service for current user");
+        }
+
+        return $services;
+    }
+
+
+
+    /**
+     *
+     * @Route("location", methods={"GET"})
+     *
+     * @param Request $request
+     * @param string $app
+     * @return JsonResponse
+     */
+    public function locationAction(Request $request,string $app)
+    {
+
+
+        $location = array();
+
+        if($app === 'all') {
+
+            $services = $this->getConfiguredServices('getCurrentLocation');
+
+            foreach ($services as $service) {
+                try {
+                    $location = $service->getCurrentLocation();
+                    break;
+                }catch (\Exception $exception) {
+
+                }
+            }
+
+        } else {
+
+            $service = $this->getService($app);
+
+            if(!$service->isConfigured()) {
+                throw new NotAcceptableHttpException("Service is not configured for current user");
+            }
+
+            $location = $service->getCurrentLocation();
+        }
+
+
+        return new JsonResponse($location);
+
+    }
+
+
     /**
      *
      * @param Request $request
      * @param string $app
      *
      * @Route("token/refresh", methods={"GET"})
-     *
      *
      * @return JsonResponse
      * @throws \Exception

@@ -76,13 +76,17 @@ class BumbleService extends APIService
     function getMatches() : array
     {
 
-        $body = json_decode('{"body":[{"message_type":81,"server_get_encounters":{"number":10,"context":1,"user_field_filter":{"projection":[210,370,200,230,490,540,530,560,291,732,890,930,662,570,380,493,1140,1150,1160,1161],"request_albums":[{"album_type":7},{"album_type":12,"external_provider":12,"count":8}],"game_mode":0,"request_music_services":{"top_artists_limit":8,"supported_services":[29],"preview_image_size":{"width":120,"height":120}}}}}],"message_id":8,"message_type":81,"version":1,"is_background":false}',true);
+        $body = '{"body":[{"message_type":81,"server_get_encounters":{"number":10,"context":1,"user_field_filter":{"projection":[210,370,200,230,490,540,530,560,291,732,890,930,662,570,380,493,1140,1150,1160,1161],"request_albums":[{"album_type":7},{"album_type":12,"external_provider":12,"count":8}],"game_mode":0,"request_music_services":{"top_artists_limit":8,"supported_services":[29],"preview_image_size":{"width":120,"height":120}}}}}],"message_id":8,"message_type":81,"version":1,"is_background":false}';
 
         $data =  $this->post('/mwebapi.phtml?SERVER_GET_ENCOUNTERS',$body);
 
         $profiles = array();
 
         $this->handleServerError($data);
+
+        if(!isset($data['body'][0]['client_encounters']['results'])) {
+            return array();
+        }
 
         foreach ($data['body'][0]['client_encounters']['results'] as $object)
         {
@@ -91,7 +95,9 @@ class BumbleService extends APIService
             $profile->setAge($user['age']);
             $profile->setAppId($user['user_id']);
             $profile->setFullName($user['name']);
-            $profile->setDistance($user['distance_short']);
+            if(isset($user['distance_short'])) {
+                $profile->setDistance($user['distance_short']);
+            }
 
             foreach ($user['profile_fields'] as $field) {
                 switch ($field['id']) {
@@ -113,6 +119,51 @@ class BumbleService extends APIService
 
             $profile->setApp(self::APP);
             $profiles[] = $profile;
+        }
+
+        return $profiles;
+    }
+
+
+
+
+    /**
+     * @return Profile[]
+     */
+    function getPendingMatches() : array
+    {
+
+        $body = '{"body":[{"message_type":245,"server_get_user_list":{"filter":[8],"filter_match_mode":[0],"folder_id":6,"user_field_filter":{"projection":[210,662,670,200,890,230,490,340,291,763]},"preferred_count":21}}],"message_id":16,"message_type":245,"version":1,"is_background":false}';
+
+        $data =  $this->post('/mwebapi.phtml?SERVER_GET_USER_LIST',$body);
+
+
+        $profiles = array();
+
+        $this->handleServerError($data);
+
+        if(!isset($data['body'][0]['client_user_list']['section'])) {
+            return array();
+        }
+
+        foreach ($data['body'][0]['client_user_list']['section'] as $object)
+        {
+
+            if(!isset($object['users'])) {
+                continue;
+            }
+            $users = $object['users'];
+
+            foreach ($users as $user) {
+
+                $profile = new Profile();
+                $profile->setAppId($user['user_id']);
+
+                $profile->addPicture('https:' . $user['profile_photo']['large_url']);
+
+                $profile->setApp(self::APP);
+                $profiles[] = $profile;
+            }
         }
 
         return $profiles;
@@ -274,14 +325,28 @@ class BumbleService extends APIService
     }
 
 
-    public function updateLocation($lat, $long) : bool
+    /**
+     * @param array $location
+     * @return bool
+     */
+    public function updateLocation($location = array()) : bool
     {
-        $body = '{"version":1,"message_type":4,"message_id":8,"body":[{"message_type":4,"server_update_location":{"location":[{"longitude":2.213749,"latitude":46.227638}]}}],"is_background":false}';
 
-        $this->post('/mwebapi.phtml?SERVER_UPDATE_LOCATION',$body);
+        $this->parseRequiredArguments($location,array('lat','lon'));
+
+        $body = '{"version":1,"message_type":4,"message_id":8,"body":[{"message_type":4,"server_update_location":{"location":[{"longitude":'. $location['lon'] .',"latitude":'. $location['lat'] .'}]}}],"is_background":false}';
+
+        $data = $this->post('/mwebapi.phtml?SERVER_UPDATE_LOCATION',$body);
+
+
+        $this->parseRequiredArguments($data);
 
         return true;
     }
+
+
+
+
 
 
     /**

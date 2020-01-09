@@ -309,16 +309,6 @@ class BadooService extends APIService
     }
 
 
-    public function updateLocation($lat, $long) : bool
-    {
-        $body = '{"version":1,"message_type":4,"message_id":8,"body":[{"message_type":4,"server_update_location":{"location":[{"longitude":2.213749,"latitude":46.227638}]}}],"is_background":false}';
-
-        $this->post('/mwebapi.phtml?SERVER_UPDATE_LOCATION',$body);
-
-        return true;
-    }
-
-
     /**
      * @return array
      */
