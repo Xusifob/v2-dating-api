@@ -475,6 +475,9 @@ class TinderService extends APIService
                         $message->setProfile($u);
                     }
 
+                    // Add created date of the last message in order to put it on top of all messages
+                    $discussion->setCreatedDate($m['sent_date']);
+
                     $discussion->addMessage($message);
 
                 }
