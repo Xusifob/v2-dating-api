@@ -13,10 +13,11 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\SetCookie;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Psr7\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use GuzzleHttp\Cookie\CookieJar;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\Security\Core\Security;
 
@@ -428,7 +429,7 @@ class BadooService extends APIService
     public function sendMessage($discussionId, Message $message) : Message
     {
 
-        throw new BadRequestHttpException("Il est impossible d'envoyer des messages sur " . self::APP);
+    //    throw new BadRequestHttpException("Il est impossible d'envoyer des messages sur " . self::APP);
 
         $body = json_decode('{"version":1,"message_type":104,"message_id":19,"body":[{"message_type":104,"chat_message":{"mssg":"","message_type":1,"stats_data":"1.833","uid":"","from_person_id":"","to_person_id":"","read":false,"chat_block_id":7}}],"is_background":false}',true);
 
@@ -443,10 +444,11 @@ class BadooService extends APIService
 
         $data = $this->post('/webapi.phtml?SERVER_SEND_CHAT_MESSAGE',$body);
 
-        dump($data);
-        die();
-
         $this->handleServerError($data);
+
+        if(!$data['body'][0]['chat_message_received']['success']) {
+            throw new HttpException(Response::HTTP_INTERNAL_SERVER_ERROR,"Une erreur est survenue à l'envoi du message");
+        }
 
         $message->setAppId($data['body'][0]['chat_message_received']['chat_message']['uid']);
         $message->setApp(self::APP);
