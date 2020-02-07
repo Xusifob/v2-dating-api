@@ -119,7 +119,7 @@ class UserController extends AbstractController
             if($user->getPassword()) {
                 $password = $encoder->encodePassword($user, $user->getPassword());
 
-                $user->setPassword($password);
+             //   $user->setPassword($password);
             }
             $em->persist($user);
             $em->flush();

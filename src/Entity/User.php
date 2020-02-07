@@ -75,6 +75,11 @@ class User extends Entity implements UserInterface, \JsonSerializable
     protected $tiilt_refresh_token;
 
     /**
+     * @ORM\Column(type="string", length=128,nullable=true)
+     */
+    protected $okcupid_token;
+
+    /**
      * @ORM\Column(type="datetime",nullable=true)
      */
     protected $next_super_like;
@@ -317,6 +322,24 @@ class User extends Entity implements UserInterface, \JsonSerializable
     public function eraseCredentials()
     {
     }
+
+    /**
+     * @return mixed
+     */
+    public function getOkcupidToken() : ?string
+    {
+        return $this->okcupid_token;
+    }
+
+    /**
+     * @param mixed $okcupid_token
+     */
+    public function setOkcupidToken(?string  $okcupid_token): void
+    {
+        $this->okcupid_token = $okcupid_token;
+    }
+
+
 
 
     /**

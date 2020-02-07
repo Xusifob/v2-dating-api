@@ -48,17 +48,21 @@ class ApiController extends AbstractController
 
     protected $kernel;
 
+
     /**
      * ApiController constructor.
      * @param TinderService $tinderService
      * @param BumbleService $bumbleService
+     * @param BadooService $badooService
+     * @param OkCupidService $okCupidService
      * @param KernelInterface $kernel
      */
-    public function __construct(TinderService $tinderService,BumbleService $bumbleService,BadooService $badooService,KernelInterface $kernel)
+    public function __construct(TinderService $tinderService,BumbleService $bumbleService,BadooService $badooService,OkCupidService $okCupidService,KernelInterface $kernel)
     {
         $this->services[TinderService::APP] = $tinderService;
         $this->services[BumbleService::APP] = $bumbleService;
         $this->services[BadooService::APP] = $badooService;
+     //   $this->services[OkCupidService::APP] = $okCupidService;
         $this->kernel = $kernel;
 
 
